@@ -7,6 +7,9 @@ import io from 'socket.io'
 
 import config from './config'
 import mongooseService from './services/mongoose'
+import sequelize from './db'
+// eslint-disable-next-line
+import models from './models/models'
 
 import Html from '../client/html'
 
@@ -73,7 +76,17 @@ server.use('/api/', (req, res) => {
   res.end()
 })
 
-httpServer.listen(PORT, () => {
-  // eslint-disable-next-line
-  console.log(`Serving at http://localhost:${PORT}`)
-})
+const start = async () => {
+  try {
+    await sequelize.authenticate()
+    await sequelize.sync()
+    httpServer.listen(PORT, () => {
+      // eslint-disable-next-line
+      console.log(`Serving at http://localhost:${PORT}`)
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+start()
